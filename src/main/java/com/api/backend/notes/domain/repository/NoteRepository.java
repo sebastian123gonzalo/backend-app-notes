@@ -1,7 +1,7 @@
 package com.api.backend.notes.domain.repository;
 
 
-import com.api.backend.notes.domain.model.Note;
+import com.api.backend.notes.domain.model.aggregates.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

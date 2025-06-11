@@ -1,14 +1,12 @@
-package com.api.backend.notes.domain.commandRequests;
+package com.api.backend.notes.domain.model.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
 public class NoteRequest {
-    // Getters and setters
     private String title;
     private String content;
     private boolean archived;
-
 }

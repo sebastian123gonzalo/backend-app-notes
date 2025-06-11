@@ -1,4 +1,4 @@
-package com.api.backend.notes.domain.model;
+package com.api.backend.notes.domain.model.aggregates;
 
 
 import jakarta.persistence.*;

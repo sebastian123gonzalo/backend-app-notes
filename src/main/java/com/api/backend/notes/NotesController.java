@@ -1,8 +1,13 @@
 package com.api.backend.notes;
 
-import com.api.backend.notes.domain.commandRequests.NoteRequest;
-import com.api.backend.notes.domain.model.Note;
-import com.api.backend.notes.domain.service.NoteService;
+import com.api.backend.notes.application.internal.commandRequests.CreateNoteCommand;
+import com.api.backend.notes.application.internal.commandRequests.DeleteNoteCommand;
+import com.api.backend.notes.application.internal.commandRequests.UpdateNoteCommand;
+import com.api.backend.notes.application.internal.queryRequests.GetActiveNotesQuery;
+import com.api.backend.notes.application.internal.queryRequests.GetArchivedNotesQuery;
+import com.api.backend.notes.application.internal.queryRequests.GetNoteByIdQuery;
+import com.api.backend.notes.domain.model.dtos.NoteRequest;
+import com.api.backend.notes.domain.model.dtos.NoteResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,55 +17,57 @@ import java.util.List;
 @RequestMapping("/api/notes")
 public class NotesController {
 
-    private final NoteService noteService;
+    private final CreateNoteCommand create;
+    private final UpdateNoteCommand update;
+    private final DeleteNoteCommand delete;
+    private final GetNoteByIdQuery getById;
+    private final GetActiveNotesQuery getActive;
+    private final GetArchivedNotesQuery getArchived;
 
-    public NotesController(NoteService noteService) {
-        this.noteService = noteService;
+    public NotesController(
+            CreateNoteCommand create,
+            UpdateNoteCommand update,
+            DeleteNoteCommand delete,
+            GetNoteByIdQuery getById,
+            GetActiveNotesQuery getActive,
+            GetArchivedNotesQuery getArchived
+    ) {
+        this.create = create;
+        this.update = update;
+        this.delete = delete;
+        this.getById = getById;
+        this.getActive = getActive;
+        this.getArchived = getArchived;
     }
 
     @PostMapping
-    public ResponseEntity<Note> createNote(@RequestBody NoteRequest request) {
-        Note note = new Note();
-        note.setTitle(request.getTitle());
-        note.setContent(request.getContent());
-        return ResponseEntity.ok(noteService.createNote(note));
+    public ResponseEntity<NoteResponse> create(@RequestBody NoteRequest request) {
+        return ResponseEntity.ok(create.execute(request));
     }
-
 
     @PutMapping("/{id}")
-    public ResponseEntity<Note> updateNote(@PathVariable Long id, @RequestBody NoteRequest noteRequest) {
-        Note note = new Note();
-        note.setId(id);
-        note.setTitle(noteRequest.getTitle());
-        note.setContent(noteRequest.getContent());
-        note.setArchived(noteRequest.isArchived());
-        return ResponseEntity.ok(noteService.updateNote(note));
-    }
-
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
-        noteService.deleteNote(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/active")
-    public ResponseEntity<List<Note>> getActiveNotes() {
-        return ResponseEntity.ok(noteService.getActiveNotes());
-    }
-
-    @GetMapping("/archived")
-    public ResponseEntity<List<Note>> getArchivedNotes() {
-        return ResponseEntity.ok(noteService.getArchivedNotes());
+    public ResponseEntity<NoteResponse> update(@PathVariable Long id, @RequestBody NoteRequest request) {
+        return ResponseEntity.ok(update.execute(id, request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Note> getNoteById(@PathVariable Long id) {
-        Note note = noteService.getNoteById(id);
-        if (note != null) {
-            return ResponseEntity.ok(note);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<NoteResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(getById.execute(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        delete.execute(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<NoteResponse>> getActive() {
+        return ResponseEntity.ok(getActive.execute());
+    }
+
+    @GetMapping("/archived")
+    public ResponseEntity<List<NoteResponse>> getArchived() {
+        return ResponseEntity.ok(getArchived.execute());
     }
 }
