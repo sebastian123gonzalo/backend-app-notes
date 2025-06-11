@@ -12,7 +12,7 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("https://app-notes-ensolvers.netlify.app/"); // Origen permitido
+        config.addAllowedOrigin("http://localhost:5173/"); // Origen permitido
         config.addAllowedHeader("*"); // Permitir todos los headers
         config.addAllowedMethod("*"); // Permitir todos los métodos (GET, POST, etc.)
         config.setAllowCredentials(true); // Permitir envío de cookies y credenciales
